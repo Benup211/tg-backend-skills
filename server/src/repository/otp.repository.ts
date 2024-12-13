@@ -1,7 +1,7 @@
-import { OTP } from "../models";
+import OTP from "../models/otp";
 
 export class OtpRepository {
-    async createOTP(
+    static async createOTP(
         user_id: number,
         otp_code: number,
         expires_at: Date
@@ -12,16 +12,21 @@ export class OtpRepository {
             expires_at,
         });
     }
-    async verifyOTP(user_id: number, otp_code: number): Promise<OTP | null> {
+    static async verifyOTP(
+        id: number,
+        user_id: number,
+        otp_code: number
+    ): Promise<OTP | null> {
         return OTP.findOne({
             where: {
+                id,
                 user_id,
                 otp_code,
                 is_used: false,
             },
         });
     }
-    async updateOTP(id: number): Promise<OTP> {
+    static async updateOTP(id: number): Promise<OTP> {
         await OTP.update(
             { is_used: true },
             {

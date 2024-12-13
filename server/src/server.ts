@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import {SequelizeClass} from './db/config/database';
 dotenv.config();
 import AuthRoute from "./routes/auth.route";
+import OtpRoute from "./routes/otp.route";
 
 export class MainServer {
     public app: express.Application = express();
@@ -34,6 +35,7 @@ export class MainServer {
 
     setRoutes() {
         this.app.use("/api/auth", AuthRoute);
+        this.app.use("/api/otp", OtpRoute);
     }
 
     handle404Error() {

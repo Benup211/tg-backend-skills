@@ -1,7 +1,10 @@
-import e, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { AuthRepository } from "../repository";
 import { ResponseService } from "../view";
 import { UserService,JwtService } from "../services";
+import { OtpRepository } from "../repository";
+import { TokenService } from "../services";
+import { sendVerificationCode } from "../services";
 
 export class AuthController {
     static async registerUser(req: Request, res: Response, next: NextFunction) {
@@ -13,9 +16,12 @@ export class AuthController {
             }
             const hashedPassword = await UserService.hashPassword(password);
             const user = await AuthRepository.createUser(email, hashedPassword);
+            const otp =await TokenService.generateVerificationCode();
+            const otpVal=await OtpRepository.createOTP(user.id,otp.token,otp.expires);
+            await sendVerificationCode(user.email,otpVal.otp_code,user.id,otpVal.id);
             ResponseService.CreateSuccessResponse(
                 201,
-                "User created successfully",
+                "User created successfully! Check Your email for Verification",
                 {
                     id: user.id,
                     email: user.email,
