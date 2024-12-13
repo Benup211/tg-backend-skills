@@ -8,6 +8,8 @@ import {SequelizeClass} from './db/config/database';
 dotenv.config();
 import AuthRoute from "./routes/auth.route";
 import OtpRoute from "./routes/otp.route";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
 
 export class MainServer {
     public app: express.Application = express();
@@ -15,6 +17,7 @@ export class MainServer {
     constructor() {
         this.setConfiguration();
         this.setRoutes();
+        this.setupSwagger();
         this.handle404Error();
         this.handleClientError();
     }
@@ -36,6 +39,28 @@ export class MainServer {
     setRoutes() {
         this.app.use("/api/auth", AuthRoute);
         this.app.use("/api/otp", OtpRoute);
+    }
+
+    setupSwagger() {
+        const options = {
+            definition: {
+                openapi: "3.0.0",
+                info: {
+                    title: "API Documentation",
+                    version: "1.0.0",
+                    description: "This is the API documentation for the tg-backend-skills application.",
+                },
+                servers: [
+                    {
+                        url: "http://localhost:3000",
+                    },
+                ],
+            },
+            apis: ["./server/src/routes/*.ts"],
+        };
+
+        const swaggerSpec = swaggerJsdoc(options);
+        this.app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     }
 
     handle404Error() {
