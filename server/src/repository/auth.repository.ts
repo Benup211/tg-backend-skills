@@ -23,4 +23,16 @@ export class AuthRepository {
             password,
         });
     }
+
+    static async verifyUser(id: number): Promise<User> {
+        await User.update(
+            { is_verified: true },
+            {
+                where: {
+                    id,
+                },
+            }
+        );
+        return User.findByPk(id);
+    }
 }
